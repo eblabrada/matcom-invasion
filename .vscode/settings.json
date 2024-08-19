@@ -1,0 +1,16 @@
+{
+  "files.associations": {
+    ".fantomasignore": "ignore",
+    "MLTable": "yaml",
+    "ncurses.h": "c",
+    "term.h": "c",
+    "hiscore.h": "c",
+    "time.h": "c",
+    "keys.h": "c",
+    "screen.h": "c",
+    "game.h": "c",
+    "sprite.h": "c",
+    "title.h": "c",
+    "string.h": "c"
+  }
+}
