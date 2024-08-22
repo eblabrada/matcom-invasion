@@ -1,6 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include "memory.h"
+
 #define WIDTH 80
 #define HEIGHT 25
 

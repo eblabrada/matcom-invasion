@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "memory.h"
 #include "screen.h"
 #include "sprite.h"
 #include "title.h"

@@ -9,6 +9,7 @@
 
 #include "game.h"
 #include "keys.h"
+#include "memory.h"
 #include "screen.h"
 #include "sprite.h"
 
@@ -21,7 +22,7 @@ long get_ticks(void) {
 
 static void draw(struct screen *screen, struct game *game) {
   clear_screen(screen);
-  
+
   draw_game(game, screen);
 
   if (game->state != TITLE) print_screen(screen);
@@ -121,8 +122,12 @@ void init_curses() {
 }
 
 int main(void) {
-  init_curses();
+  init_memory(); init_curses();
 
+  // struct screen *sc = NULL;
+  // sc = new_screen();
+  // if (!sc) printf("BAD");
+  // return 0;
   int ret = 0;
   float elapsed;
   long start_ticks;

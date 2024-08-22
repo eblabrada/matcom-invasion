@@ -11,6 +11,10 @@
     "game.h": "c",
     "sprite.h": "c",
     "title.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "pthread.h": "c",
+    "assert.h": "c",
+    "memory.h": "c",
+    "stdio.h": "c"
   }
 }

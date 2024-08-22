@@ -8,6 +8,7 @@ objects = \
 	Engine/game.o \
 	Engine/screen.o \
 	Engine/keys.o \
+	Engine/memory.o \
 	Engine/main.o
 
 all: $(binary)

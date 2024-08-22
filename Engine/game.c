@@ -10,14 +10,17 @@
 #include "sprite.h"
 
 struct game *new_game(void) {
-  struct game *game = malloc(sizeof(*game));
-  if (!game) return NULL;
+  struct game *game = (struct game*)my_malloc(sizeof(struct game));
+  if (!game) {
+    fprintf(stderr, "Memory allocation failed!\n");
+    return NULL;
+  }
 
   game->quit = false;
   return game;
 }
 
-void delete_game(struct game *game) { free(game); }
+void delete_game(struct game *game) { my_free(game); }
 
 static void draw_text(char *text, int x, int y, struct screen *screen) {
   if (!text || !screen) return;
