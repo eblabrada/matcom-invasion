@@ -32,8 +32,8 @@ bool collision_sprite(struct sprite *sprite1, struct sprite *sprite2) {
   int x1 = sprite1->x, y1 = sprite1->y;
   int x2 = sprite2->x, y2 = sprite2->y;
 
-  if (x1 < x2 + sprite2->width && x1 + sprite1->width > x2 &&
-      y1 < y2 + sprite2->height && y1 + sprite1->height > y2)
+  if (y1 < y2 + sprite2->width && y1 + sprite1->width > y2 &&
+      x1 < x2 + sprite2->height && x1 + sprite1->height > x2)
     return true;
 
   return false;

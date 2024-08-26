@@ -9,6 +9,13 @@
 
 #include "sprite.h"
 
+static int LOG10(int v) {
+  int ret = 0;
+  while (v > 0)
+    ret++, v /= 10;
+  return ret;
+}
+
 struct game *new_game(void) {
   struct game *game = (struct game*)my_malloc(sizeof(struct game));
   if (!game) {
@@ -45,22 +52,20 @@ static void draw_stats(struct game *game, struct screen *screen) {
   int lvl = game->level;
   int lives = game->ship.lives;
   int score = game->score;
+  int best_score = game->best_score;
 
   struct pixel *pixel;
-
-  pixel = screen->pixels;
-  for (int i = 0; i < lvl; i++) {
-    pixel->ascii = 'L';
-    pixel++;
+  
+  {
+    char buf[MAX_TEXT_LEN];
+    snprintf(buf, MAX_TEXT_LEN, "LEVEL %d", lvl);
+    draw_text(buf, 0, 0, screen);
   }
-
-  pixel = screen->pixels;
-  pixel += WIDTH - 1;
-  for (int i = 0; i < lives; i++) {
-    pixel->ascii = 'H';
-    pixel--;
-    pixel->ascii = ' ';
-    pixel--;
+  
+  {
+    char buf[MAX_TEXT_LEN];
+    snprintf(buf, MAX_TEXT_LEN, "%d LIVES", lives);
+    draw_text(buf, 0, WIDTH - LOG10(lives) - 7, screen);
   }
 
   pixel = screen->pixels;
@@ -75,6 +80,10 @@ static void draw_stats(struct game *game, struct screen *screen) {
       score /= 10;
     }
   }
+
+  char buf[MAX_TEXT_LEN];
+  snprintf(buf, MAX_TEXT_LEN, "%d", best_score);
+  draw_text(buf, HEIGHT - 1, 0, screen);
 
   // struct sprite *ship = &game->ship;
   // char buf[MAX_TEXT_LEN];
@@ -105,7 +114,9 @@ void draw_game(struct game *game, struct screen *screen) {
       break;
     case TRANSITION:
       draw_stats(game, screen);
-      draw_text("Press Space...", 10, 31, screen);
+      char buf[MAX_TEXT_LEN];
+      snprintf(buf, MAX_TEXT_LEN, "NEXT LEVEL %d", game->level + 1);
+      draw_text(buf, 10, 31, screen);
       break;
     case GAME_OVER:
       draw_stats(game, screen);
@@ -124,7 +135,7 @@ void init_game(struct game *game) {
 
   srand(time(NULL));
 
-  ship->x = HEIGHT - 2;
+  ship->x = HEIGHT - 4;
   ship->y = WIDTH / 2.0 - 3;
   ship->speed = 20.0;
   ship->alive = true;

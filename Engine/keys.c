@@ -3,6 +3,8 @@
 #include <ncurses.h>
 #include <stdio.h>
 
+#include "score.h"
+
 void handle_keys_title(struct game *game, char c) {
   switch (c) {
     case 'q':
@@ -13,6 +15,7 @@ void handle_keys_title(struct game *game, char c) {
       game->ship.lives = 3;
       game->score = 0;
       game->level = 1;
+      game->best_score = read_score();
       init_game(game);
       game->state = PLAY;
       break;

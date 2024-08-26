@@ -10,6 +10,7 @@
 #include "game.h"
 #include "keys.h"
 #include "memory.h"
+#include "score.h"
 #include "screen.h"
 #include "sprite.h"
 
@@ -46,7 +47,6 @@ static void update(struct game *game, float ftime) {
         if (alien->y == WIDTH - alien->width) {
           move_sprite(alien, alien->x + 2, alien->y);
           alien->direction = LEFT;
-          alien->speed += 5;
         }
 
         if (alien->y == 0) {
@@ -73,7 +73,7 @@ static void update(struct game *game, float ftime) {
             game->score += game->level * 10 + 10;
           }
 
-          if (collision_sprite(ship, alien)) {
+          if (alien->x >= HEIGHT - 3 || collision_sprite(ship, alien)) {
             alien->alive = false;
             ship->lives--;
 
@@ -82,6 +82,9 @@ static void update(struct game *game, float ftime) {
             } else {
               ship->alive = false;
               game->state = GAME_OVER;
+              if (game->score > game->best_score) {
+                write_score(game->score);
+              }
             }
           }
         } else {
@@ -122,12 +125,9 @@ void init_curses() {
 }
 
 int main(void) {
-  init_memory(); init_curses();
+  init_memory();
+  init_curses();
 
-  // struct screen *sc = NULL;
-  // sc = new_screen();
-  // if (!sc) printf("BAD");
-  // return 0;
   int ret = 0;
   float elapsed;
   long start_ticks;

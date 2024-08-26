@@ -1,7 +1,7 @@
 {
   "files.associations": {
-    ".fantomasignore": "ignore",
     "MLTable": "yaml",
+    ".fantomasignore": "ignore",
     "ncurses.h": "c",
     "term.h": "c",
     "hiscore.h": "c",
@@ -15,6 +15,7 @@
     "pthread.h": "c",
     "assert.h": "c",
     "memory.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "stats.h": "c"
   }
 }

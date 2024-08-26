@@ -21,7 +21,7 @@ struct game {
   struct sprite bullet;
   struct sprite aliens[MAX_NUM_ALIENS];
   int state;
-  int score;
+  int score, best_score;
   int level;
   bool quit;
 };
