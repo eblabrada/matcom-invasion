@@ -131,7 +131,7 @@ void init_game(struct game *game) {
   struct sprite *ship = &game->ship;
   struct sprite *bullet = &game->bullet;
   struct sprite *aliens = game->aliens;
-  float alien_speed = 15.0 + 1.0 * game->level;
+  float alien_speed = 15.0 + 2.0 * game->level;
 
   srand(time(NULL));
 
