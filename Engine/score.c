@@ -2,25 +2,25 @@
 
 #include <stdio.h>
 
-static const char *score_file = "score";
+static const char* score_file = "score";
 
 int read_score() {
-  FILE *file = fopen(score_file, "rb");
+    FILE* file = fopen(score_file, "rb");
 
-  if (!file) return 0;
+    if (!file) return 0;
 
-  int ret = 0;
-  fread(&ret, sizeof(ret), 1, file);
+    int ret = 0;
+    fread(&ret, sizeof(ret), 1, file);
 
-  fclose(file);
-  return ret;
+    fclose(file);
+    return ret;
 }
 
 void write_score(int score) {
-  FILE *file = fopen(score_file, "wb");
+    FILE* file = fopen(score_file, "wb");
 
-  if (!file) return;
+    if (!file) return;
 
-  fwrite(&score, sizeof(score), 1, file);
-  fclose(file);
+    fwrite(&score, sizeof(score), 1, file);
+    fclose(file);
 }

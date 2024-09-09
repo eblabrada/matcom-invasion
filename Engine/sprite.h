@@ -12,17 +12,17 @@
 enum directions { LEFT, RIGHT };
 
 struct sprite {
-  float x, y;
-  int width, height;
-  float speed;
-  bool alive;
-  int lives;
-  char ascii[MAX_SPRITE_WIDTH];
-  int direction;
+	float x, y;
+	int width, height;
+	float speed;
+	bool alive;
+	int lives;
+	char ascii[MAX_SPRITE_WIDTH];
+	int direction;
 };
 
-void move_sprite(struct sprite *sprite, float x, float y);
-void draw_sprite(struct sprite *sprite, struct screen *screen);
-bool collision_sprite(struct sprite *sprite1, struct sprite *sprite2);
+void move_sprite(struct sprite* sprite, float x, float y);
+void draw_sprite(struct sprite* sprite, struct screen* screen);
+bool collision_sprite(struct sprite* sprite1, struct sprite* sprite2);
 
 #endif  // SPRITE_H

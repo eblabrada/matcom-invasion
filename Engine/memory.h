@@ -9,8 +9,8 @@
 #define MEMORY_SIZE 4096
 
 typedef struct Block {
-  size_t size;
-  struct Block* nxt;
+    size_t size;
+    struct Block* nxt;
 } Block;
 
 void init_memory();

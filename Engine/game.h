@@ -17,18 +17,18 @@
 enum states { TITLE, PLAY, TRANSITION, GAME_OVER };
 
 struct game {
-  struct sprite ship;
-  struct sprite bullet;
-  struct sprite aliens[MAX_NUM_ALIENS];
-  int state;
-  int score, best_score;
-  int level;
-  bool quit;
+	struct sprite ship;
+	struct sprite bullet;
+	struct sprite aliens[MAX_NUM_ALIENS];
+	int state;
+	int score, best_score;
+	int level;
+	bool quit;
 };
 
-struct game *new_game(void);
-void delete_game(struct game *game);
-void draw_game(struct game *game, struct screen *screen);
-void init_game(struct game *game);
+struct game* new_game(void);
+void delete_game(struct game* game);
+void draw_game(struct game* game, struct screen* screen);
+void init_game(struct game* game);
 
 #endif  // GAME_H
