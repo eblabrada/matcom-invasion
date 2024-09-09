@@ -108,10 +108,15 @@ static void update(struct game* game, float ftime) {
 volatile int key_pressed = 0;
 
 void* keyboard_handler(void* arg) {
+	struct game* game = (struct game*)arg;
 	while (true) {
 		int ch = getch();
 		if (ch != ERR) {
 			key_pressed = ch;
+		}
+		if (key_pressed != 0) {
+			handle_keys(game, key_pressed);
+			key_pressed = 0;
 		}
 	}
 	return NULL;
@@ -149,23 +154,23 @@ int main(void) {
 	start_ticks = get_ticks();
 
 	pthread_t keyboard_thread;
-	pthread_create(&keyboard_thread, NULL, keyboard_handler, NULL);
+	pthread_create(&keyboard_thread, NULL, keyboard_handler, game);
 
 	// main loop
 	while (!game->quit) {
 		float ftime = (get_ticks() - start_ticks) / 1000.0;
 		start_ticks = get_ticks();
 
-		if (key_pressed != 0) {
-			handle_keys(game, key_pressed);
-			key_pressed = 0;
-		}
+		// if (key_pressed != 0) {
+		// 	handle_keys(game, key_pressed);
+		// 	key_pressed = 0;
+		// }
 
 		update(game, ftime);
 		draw(screen, game);
 
 		elapsed = get_ticks() - start_ticks;  // in milliseconds
-		usleep((long)(16.666 - elapsed) * 100);
+		usleep((long)(16.666 - elapsed) * 1000);
 	}
 
 	pthread_cancel(keyboard_thread);

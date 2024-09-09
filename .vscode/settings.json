@@ -17,5 +17,6 @@
     "memory.h": "c",
     "stdio.h": "c",
     "stats.h": "c"
-  }
+  },
+  "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }
