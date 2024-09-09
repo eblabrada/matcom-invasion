@@ -38,21 +38,8 @@ static void update(struct game* game, float ftime) {
 	case PLAY:
 		for (int i = 0; i < NUM_ALIENS; i++) {
 			struct sprite* alien = &aliens[i];
-			float deltaY = alien->speed * ftime;
-
-			if (alien->direction == LEFT) deltaY *= -1;
-
-			move_sprite(alien, alien->x, alien->y + deltaY);
-
-			if (alien->y == WIDTH - alien->width) {
-				move_sprite(alien, alien->x + 2, alien->y);
-				alien->direction = LEFT;
-			}
-
-			if (alien->y == 0) {
-				move_sprite(alien, alien->x + 2, alien->y);
-				alien->direction = RIGHT;
-			}
+			float deltaX = alien->speed * ftime;
+			move_sprite(alien, alien->x + deltaX, alien->y);
 		}
 
 		if (bullet->alive) {
