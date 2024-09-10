@@ -11,6 +11,7 @@ objects = \
 	Engine/keys.o \
 	Engine/memory.o \
 	Engine/score.o \
+	Engine/utils.o \
 	Engine/main.o
 
 all: $(binary)

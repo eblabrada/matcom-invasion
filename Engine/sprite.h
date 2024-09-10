@@ -9,16 +9,14 @@
 
 #define MAX_SPRITE_WIDTH 10
 
-enum directions { LEFT, RIGHT };
-
 struct sprite {
 	float x, y;
 	int width, height;
 	float speed;
 	bool alive;
+	bool waiting;
 	int lives;
 	char ascii[MAX_SPRITE_WIDTH];
-	int direction;
 };
 
 void move_sprite(struct sprite* sprite, float x, float y);

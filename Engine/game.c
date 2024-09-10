@@ -6,15 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include "sprite.h"
-
-static int LOG10(int v) {
-    int ret = 0;
-    while (v > 0)
-        ret++, v /= 10;
-    return ret;
-}
+#include <unistd.h> 
 
 struct game* new_game(void) {
     struct game* game = (struct game*)my_malloc(sizeof(struct game));
@@ -107,7 +99,7 @@ void draw_game(struct game* game, struct screen* screen) {
         draw_sprite(ship, screen);
         draw_sprite(bullet, screen);
 
-        for (int i = 0; i < NUM_ALIENS; i++) {
+        for (int i = 0; i < game->num_aliens; i++) {
             draw_sprite(&aliens[i], screen);
         }
         break;
@@ -130,7 +122,7 @@ void init_game(struct game* game) {
     struct sprite* ship = &game->ship;
     struct sprite* bullet = &game->bullet;
     struct sprite* aliens = game->aliens;
-    float alien_speed = 0.5 + 0.2 * game->level;
+    game->num_aliens = min(50, 10 * game->level);
 
     srand(time(NULL));
 
@@ -150,16 +142,108 @@ void init_game(struct game* game) {
     bullet->width = strlen(bullet->ascii);
     bullet->height = 1;
 
-    for (int i = 0; i < NUM_ALIENS; i++) {
+    float alien_speed = 0.3 + 0.2 * game->level;
+    for (int i = 0; i < game->num_aliens; i++) {
         struct sprite* alien = &aliens[i];
 
+        alien->x = 0;
+        alien->y = 0;
         alien->speed = alien_speed;
-        alien->alive = true;
+        alien->alive = false;
         strncpy(alien->ascii, "vQv", MAX_SPRITE_WIDTH);
-        alien->width = strlen(aliens->ascii);
+        alien->width = strlen(alien->ascii);
         alien->height = 1;
-        alien->x = 1;
-        alien->y = 1 + (aliens->width + 2) * i;
-        alien->direction = RIGHT;
+        alien->waiting = true;
     }
+
+    generate_aliens_scheduling(game);
+}
+
+// Configure "process" scheduling
+void generate_aliens_scheduling(struct game* game) {
+    struct sprite* aliens = game->aliens;
+    int num_aliens = game->num_aliens;
+
+    float arrival_time = 0;
+    float waiting_time = 0;
+    float remaining_time = 0;
+
+    for (int i = 0; i < num_aliens; ++i) {
+        struct sprite* alien = &aliens[i];
+
+        srand(time(NULL));
+
+        if (i % (game->level + 2) == 0 && i != 0) {
+            arrival_time += 3;
+            waiting_time = 1 + rand() % 5;
+            remaining_time = waiting_time;
+        }
+
+        game->waiting_aliens[i] = (struct waiting_alien){
+            .alien = alien,
+            .arrival_time = arrival_time,
+            .waiting_time = waiting_time,
+            .remaining_time = remaining_time
+        };
+    }
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, start_stcf_scheduling, game);
+}
+
+// Shortest Time to Completation First Algorithm 
+void* start_stcf_scheduling(void* arg) {
+    struct game* game = (struct game*)arg;
+
+    int num_aliens = game->num_aliens;
+    int deployed_aliens = 0;
+
+    long start_ticks = get_ticks();
+    long last_ticks = get_ticks();
+    float elapsed = 0;
+    float current_time = 0;
+
+    struct waiting_alien* waiting_alien = NULL;
+    struct waiting_alien* i_alien = NULL;
+    struct sprite* alien = NULL;
+
+    while (deployed_aliens < num_aliens && game->state == PLAY) {
+        waiting_alien = NULL;
+
+        current_time = (get_ticks() - start_ticks) / 1000.0;
+
+        for (int i = 0; i < num_aliens; ++i) {
+            i_alien = &game->waiting_aliens[i];
+
+            if (i_alien->alien->waiting && i_alien->arrival_time <= current_time) {
+                if (!waiting_alien)
+                    waiting_alien = i_alien;
+                else {
+                    if (i_alien->remaining_time < waiting_alien->remaining_time)
+                        waiting_alien = i_alien;
+                }
+            }
+        }
+
+        if (!waiting_alien)
+            continue;
+
+        elapsed = get_ticks() - last_ticks;  // in milliseconds
+        last_ticks = get_ticks();
+
+        waiting_alien->remaining_time -= elapsed / 1000.0;
+
+        if (waiting_alien->remaining_time <= 0) {
+            // Deploy alien
+            alien = waiting_alien->alien;
+            alien->waiting = false;
+            alien->alive = true;
+            alien->x = 1;
+            alien->y = 1 + 6 * deployed_aliens;
+
+            deployed_aliens++;
+        }
+    }
+
+    pthread_exit(NULL);
 }

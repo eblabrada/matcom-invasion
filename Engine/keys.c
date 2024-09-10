@@ -12,12 +12,12 @@ void handle_keys_title(struct game* game, char c) {
 		break;
 	case ' ':
 		// start new game
-		game->ship.lives = 3;
+		game->ship.lives = 5;
 		game->score = 0;
 		game->level = 1;
 		game->best_score = read_score();
-		init_game(game);
 		game->state = PLAY;
+		init_game(game);
 		break;
 	}
 }

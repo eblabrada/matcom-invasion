@@ -16,7 +16,9 @@
     "assert.h": "c",
     "memory.h": "c",
     "stdio.h": "c",
-    "stats.h": "c"
+    "stats.h": "c",
+    "stdlib.h": "c",
+    "scheduling.h": "c"
   },
   "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }

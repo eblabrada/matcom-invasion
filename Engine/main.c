@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>  // usleep
 
 #include "game.h"
@@ -13,13 +12,7 @@
 #include "score.h"
 #include "screen.h"
 #include "sprite.h"
-
-// return milliseconds
-long get_ticks(void) {
-	struct timespec ts;
-	clock_gettime(1, &ts);
-	return (long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-}
+#include "utils.h"
 
 static void draw(struct screen* screen, struct game* game) {
 	clear_screen(screen);
@@ -33,10 +26,14 @@ static void update(struct game* game, float ftime) {
 	struct sprite* ship = &game->ship;
 	struct sprite* bullet = &game->bullet;
 	struct sprite* aliens = game->aliens;
+	int num_aliens = game->num_aliens;
 
 	switch (game->state) {
 	case PLAY:
-		for (int i = 0; i < NUM_ALIENS; i++) {
+		for (int i = 0; i < num_aliens; i++) {
+			if (!aliens[i].alive)
+				continue;
+
 			struct sprite* alien = &aliens[i];
 			float deltaX = alien->speed * ftime;
 			move_sprite(alien, alien->x + deltaX, alien->y);
@@ -51,8 +48,9 @@ static void update(struct game* game, float ftime) {
 		}
 
 		int killed = 0;
-		for (int i = 0; i < NUM_ALIENS; i++) {
+		for (int i = 0; i < num_aliens; i++) {
 			struct sprite* alien = &aliens[i];
+			if (alien->waiting) continue;
 
 			if (alien->alive) {
 				if (bullet->alive && collision_sprite(bullet, alien)) {
@@ -81,11 +79,10 @@ static void update(struct game* game, float ftime) {
 			}
 		}
 
-		if (killed == NUM_ALIENS && ship->alive) {
+		if (killed == num_aliens && ship->alive) {
 			game->state = TRANSITION;
 			game->score += 100 * game->level;
 		}
-
 		break;
 	case GAME_OVER:
 		break;
@@ -145,13 +142,8 @@ int main(void) {
 
 	// main loop
 	while (!game->quit) {
-		float ftime = (get_ticks() - start_ticks) / 1000.0;
+		float ftime = (double)(get_ticks() - start_ticks) / 1000.0;
 		start_ticks = get_ticks();
-
-		// if (key_pressed != 0) {
-		// 	handle_keys(game, key_pressed);
-		// 	key_pressed = 0;
-		// }
 
 		update(game, ftime);
 		draw(screen, game);
