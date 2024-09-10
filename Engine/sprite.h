@@ -6,6 +6,7 @@
 
 #include "memory.h"
 #include "screen.h"
+#include "utils.h"
 
 #define MAX_SPRITE_WIDTH 10
 

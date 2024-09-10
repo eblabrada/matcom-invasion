@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "utils.h"
+
 #define MEMORY_SIZE 4096
 
 typedef struct Block {

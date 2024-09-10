@@ -51,10 +51,12 @@ static void update(struct game* game, float ftime) {
 		for (int i = 0; i < num_aliens; i++) {
 			struct sprite* alien = &aliens[i];
 			if (alien->waiting) continue;
-
+ 
 			if (alien->alive) {
 				if (bullet->alive && collision_sprite(bullet, alien)) {
-					bullet->alive = alien->alive = false;
+					bullet->alive = false;
+					alien->alive = false;
+					page_reference(rand() % NUM_PAGES, game);
 					game->score += game->level * 10 + 10;
 				}
 

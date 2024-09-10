@@ -52,9 +52,10 @@ void* my_malloc(size_t size) {
         current = current->nxt;
     }
 
-    printf("Allocation failed: Not enough memory.\n");
-
     pthread_mutex_unlock(&memory_mutex);
+
+    throw_error("Allocation failed: Not enough memory.\n");
+
     return NULL;
 }
 

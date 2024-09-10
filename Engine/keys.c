@@ -12,12 +12,12 @@ void handle_keys_title(struct game* game, char c) {
 		break;
 	case ' ':
 		// start new game
-		game->ship.lives = 5;
+		game->ship.lives = 3;
 		game->score = 0;
 		game->level = 1;
 		game->best_score = read_score();
-		game->state = PLAY;
 		init_game(game);
+		game->state = PLAY;
 		break;
 	}
 }
@@ -30,14 +30,14 @@ void handle_keys_play(struct game* game, char c) {
 	case 'q':
 		game->state = TITLE;
 		break;
-	case 'w':
-		// move up
-		move_sprite(ship, ship->x - 1, ship->y);
-		break;
-	case 's':
-		// move down
-		move_sprite(ship, ship->x + 1, ship->y);
-		break;
+	// case 'w':
+	// 	// move up
+	// 	move_sprite(ship, ship->x - 1, ship->y);
+	// 	break;
+	// case 's':
+	// 	// move down
+	// 	move_sprite(ship, ship->x + 1, ship->y);
+	// 	break;
 	case 'a':
 		// move left
 		move_sprite(ship, ship->x, ship->y - 1);

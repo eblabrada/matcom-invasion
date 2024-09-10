@@ -9,17 +9,18 @@
 #include <unistd.h> 
 
 struct game* new_game(void) {
-    struct game* game = (struct game*)my_malloc(sizeof(struct game));
+    struct game* game = (struct game*)malloc(sizeof(struct game));
     if (!game) {
-        fprintf(stderr, "Memory allocation failed!\n");
-        return NULL;
+        throw_error("Memory allocation failed!\n");
     }
 
     game->quit = false;
     return game;
 }
 
-void delete_game(struct game* game) { my_free(game); }
+void delete_game(struct game* game) { free(game); }
+
+#pragma region DRAW_GAME
 
 static void draw_text(char* text, int x, int y, struct screen* screen) {
     if (!text || !screen) return;
@@ -122,7 +123,7 @@ void init_game(struct game* game) {
     struct sprite* ship = &game->ship;
     struct sprite* bullet = &game->bullet;
     struct sprite* aliens = game->aliens;
-    game->num_aliens = min(50, 10 * game->level);
+    game->num_aliens = min(50, 10 + 3 * game->level);
 
     srand(time(NULL));
 
@@ -142,7 +143,7 @@ void init_game(struct game* game) {
     bullet->width = strlen(bullet->ascii);
     bullet->height = 1;
 
-    float alien_speed = 0.3 + 0.2 * game->level;
+    float alien_speed = 0.5 + 0.3 * game->level;
     for (int i = 0; i < game->num_aliens; i++) {
         struct sprite* alien = &aliens[i];
 
@@ -159,6 +160,10 @@ void init_game(struct game* game) {
     generate_aliens_scheduling(game);
 }
 
+#pragma endregion
+
+#pragma region SCHEDULING
+
 // Configure "process" scheduling
 void generate_aliens_scheduling(struct game* game) {
     struct sprite* aliens = game->aliens;
@@ -171,11 +176,9 @@ void generate_aliens_scheduling(struct game* game) {
     for (int i = 0; i < num_aliens; ++i) {
         struct sprite* alien = &aliens[i];
 
-        srand(time(NULL));
-
-        if (i % (game->level + 2) == 0 && i != 0) {
-            arrival_time += 3;
-            waiting_time = 1 + rand() % 5;
+        if (i % NUM_PAGES == 0 && i != 0) {
+            arrival_time += 1.0 + (double)(rand() % 2000) / 1000.0;
+            waiting_time = (double)(rand() % 4000) / 1000.0;
             remaining_time = waiting_time;
         }
 
@@ -194,6 +197,8 @@ void generate_aliens_scheduling(struct game* game) {
 // Shortest Time to Completation First Algorithm 
 void* start_stcf_scheduling(void* arg) {
     struct game* game = (struct game*)arg;
+    init_page_queue(game);
+    struct page_queue* page_queue = game->page_queue;
 
     int num_aliens = game->num_aliens;
     int deployed_aliens = 0;
@@ -238,12 +243,92 @@ void* start_stcf_scheduling(void* arg) {
             alien = waiting_alien->alien;
             alien->waiting = false;
             alien->alive = true;
+
+            int page = select_page(game);
+
             alien->x = 1;
-            alien->y = 1 + 6 * deployed_aliens;
+            alien->y = page * game->pages[page].offset + game->pages[page].offset / 2 - 1;
+            // alien->y = 6 * deployed_aliens;
 
             deployed_aliens++;
         }
     }
 
+    free_queue(game);
+
     pthread_exit(NULL);
 }
+
+#pragma endregion
+
+#pragma region PAGINATION
+
+void page_reference(int page_number, struct game* game) {
+    push(page_number, game);
+}
+
+int select_page(struct game* game) {
+    while (true) {
+        int ret = pop(game);
+        if (game->pages[ret].counter > 1) {
+            game->pages[ret].counter--;
+            continue;
+        }
+        page_reference(ret, game);
+        return ret;
+    }
+}
+
+struct page_queue* init_page_queue(struct game* game) {
+    struct page_queue* page_queue = (struct page_queue*)malloc(sizeof(struct page_queue));
+    game->page_queue = page_queue;
+    page_queue->first = 0;
+    page_queue->last = 0;
+
+    // Initialize the queue the first NUM_PAGES pages with random diferents values between 0 and NUM_PAGES-1 
+    // too lazy to implement a better algorithm
+    for (int i = 0; i < NUM_PAGES; i++) {
+        int page_number = rand() % NUM_PAGES;
+        bool repeated = false;
+
+        for (int j = 0; j < i; j++) {
+            if (page_queue->queue[j] == page_number) {
+                repeated = true;
+                break;
+            }
+        }
+
+        if (repeated) {
+            i--;
+            continue;
+        }
+
+        game->pages[page_number].offset = WIDTH / NUM_PAGES;
+        game->pages[page_number].counter = 0;
+        push(page_number, game);
+    }
+
+    return page_queue;
+}
+
+void free_queue(struct game* game) { free(game->page_queue); }
+
+int pop(struct game* game) {
+    if (game->page_queue->first >= game->page_queue->last) {
+        throw_error("Queue is empty!\n");
+        return -1;
+    }
+
+    int page_number = game->page_queue->queue[game->page_queue->first];
+    game->page_queue->first++;
+    game->pages[page_number].counter--;
+    return page_number;
+}
+
+void push(int page_number, struct game* game) {
+    game->page_queue->queue[game->page_queue->last] = page_number;
+    game->page_queue->last++;
+    game->pages[page_number].counter++;
+}
+
+#pragma endregion

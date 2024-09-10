@@ -12,3 +12,9 @@ long get_ticks(void) {
     clock_gettime(1, &ts);
     return (long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
+
+// Stop the execution of the program and print arguments
+void throw_error(const char* message) {
+    printf("Error: %s\n", message);
+    exit(-1);
+}

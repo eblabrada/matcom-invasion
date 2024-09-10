@@ -12,14 +12,26 @@
 
 #define MAX_TEXT_LEN 100
 #define MAX_NUM_ALIENS 50
+#define NUM_PAGES 5
 
 enum states { TITLE, PLAY, TRANSITION, GAME_OVER };
 
+struct page {
+	int offset;
+	int counter;
+};
+
+struct page_queue {
+	int queue[2 * MAX_NUM_ALIENS + 2];
+	int first;
+	int last;
+};
+
 struct waiting_alien {
-    struct sprite* alien;
-    float arrival_time;
-    float waiting_time;
-    float remaining_time;
+	struct sprite* alien;
+	float arrival_time;
+	float waiting_time;
+	float remaining_time;
 };
 
 struct game {
@@ -27,6 +39,8 @@ struct game {
 	struct sprite bullet;
 	struct sprite aliens[MAX_NUM_ALIENS];
 	struct waiting_alien waiting_aliens[MAX_NUM_ALIENS];
+	struct page pages[NUM_PAGES];
+	struct page_queue* page_queue;
 	int num_aliens;
 	int state;
 	int score, best_score;
@@ -41,5 +55,12 @@ void init_game(struct game* game);
 
 void generate_aliens_scheduling(struct game* game);
 void* start_stcf_scheduling(void* arg);
+
+void page_reference(int page_number, struct game* game);
+int select_page(struct game* game);
+struct page_queue* init_page_queue(struct game* game);
+void free_queue(struct game* game);
+int pop(struct game* game);
+void push(int page_number, struct game* game);
 
 #endif  // GAME_H
