@@ -15,6 +15,6 @@ long get_ticks(void) {
 
 // Stop the execution of the program and print arguments
 void throw_error(const char* message) {
-    // printf("Error: %s\n", message);
+    printf("Error: %s\n", message);
     exit(0);
 }

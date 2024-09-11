@@ -26,23 +26,49 @@ static void update(struct game* game, float ftime) {
 	struct sprite* ship = &game->ship;
 	struct sprite* bullet = &game->bullet;
 	struct sprite* aliens = game->aliens;
+	struct sprite* aliens_bullets = game->aliens_bullets;
 	int num_aliens = game->num_aliens;
 
 	switch (game->state) {
 	case PLAY:
 		for (int i = 0; i < num_aliens; i++) {
-			if (!aliens[i].alive)
-				continue;
+			if (aliens[i].alive) {
+				struct sprite* alien = &aliens[i];
+				float deltaX = alien->speed * ftime;
+				move_sprite(alien, alien->x + deltaX, alien->y);
+			}
 
-			struct sprite* alien = &aliens[i];
-			float deltaX = alien->speed * ftime;
-			move_sprite(alien, alien->x + deltaX, alien->y);
+			struct sprite* alien_bullet = &aliens_bullets[i];
+			if (alien_bullet->alive) {
+				float deltaX = alien_bullet->speed * ftime;
+				move_sprite(alien_bullet, alien_bullet->x + deltaX, alien_bullet->y);
+				if (alien_bullet->x >= HEIGHT - 2) {
+					alien_bullet->alive = false;
+				}
+
+				if (collision_sprite(alien_bullet, ship)) {
+					alien_bullet->alive = false;
+					ship->lives--;
+					if (ship->lives > 0) {
+						game->state = TRANSITION;
+						usleep(10000);
+						init_game(game);
+					}
+					else {
+						ship->alive = false;
+						game->state = GAME_OVER;
+						if (game->score > game->best_score) {
+							write_score(game->score);
+						}
+					}
+				}
+			}
 		}
 
 		if (bullet->alive) {
 			float deltaX = bullet->speed * ftime;
 			move_sprite(bullet, bullet->x - deltaX, bullet->y);
-			if (bullet->x == 0) {
+			if (bullet->x <= 0) {
 				bullet->alive = false;
 			}
 		}
@@ -51,7 +77,7 @@ static void update(struct game* game, float ftime) {
 		for (int i = 0; i < num_aliens; i++) {
 			struct sprite* alien = &aliens[i];
 			if (alien->waiting) continue;
- 
+
 			if (alien->alive) {
 				if (bullet->alive && collision_sprite(bullet, alien)) {
 					bullet->alive = false;
@@ -65,6 +91,8 @@ static void update(struct game* game, float ftime) {
 					ship->lives--;
 
 					if (ship->lives > 0) {
+						game->state = TRANSITION;
+						usleep(10000);
 						init_game(game);
 					}
 					else {
@@ -82,6 +110,7 @@ static void update(struct game* game, float ftime) {
 		}
 
 		if (killed == num_aliens && ship->alive) {
+			game->level++;
 			game->state = TRANSITION;
 			game->score += 100 * game->level;
 		}
