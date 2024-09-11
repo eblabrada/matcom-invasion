@@ -30,14 +30,6 @@ void handle_keys_play(struct game* game, char c) {
 	case 'q':
 		game->state = TITLE;
 		break;
-	// case 'w':
-	// 	// move up
-	// 	move_sprite(ship, ship->x - 1, ship->y);
-	// 	break;
-	// case 's':
-	// 	// move down
-	// 	move_sprite(ship, ship->x + 1, ship->y);
-	// 	break;
 	case 'a':
 		// move left
 		move_sprite(ship, ship->x, ship->y - 1);

@@ -8,7 +8,7 @@
 
 #include "utils.h"
 
-#define MEMORY_SIZE 4096
+#define MEMORY_SIZE 1028 * 1028
 
 typedef struct Block {
     size_t size;

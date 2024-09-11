@@ -151,7 +151,7 @@ int main(void) {
 		draw(screen, game);
 
 		elapsed = get_ticks() - start_ticks;  // in milliseconds
-		usleep((long)(16.666 - elapsed) * 1000);
+		usleep((long)(14 - elapsed) * 1000);
 	}
 
 	pthread_cancel(keyboard_thread);
