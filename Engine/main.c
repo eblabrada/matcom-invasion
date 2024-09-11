@@ -52,6 +52,7 @@ static void update(struct game* game, float ftime) {
 					if (ship->lives > 0) {
 						game->state = TRANSITION;
 						usleep(10000);
+						game->state = PLAY;
 						init_game(game);
 					}
 					else {
@@ -93,6 +94,7 @@ static void update(struct game* game, float ftime) {
 					if (ship->lives > 0) {
 						game->state = TRANSITION;
 						usleep(10000);
+						game->state = PLAY;
 						init_game(game);
 					}
 					else {

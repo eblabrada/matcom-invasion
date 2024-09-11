@@ -102,7 +102,7 @@ void draw_game(struct game* game, struct screen* screen) {
     case TRANSITION:
         draw_stats(game, screen);
         char buf[MAX_TEXT_LEN];
-        snprintf(buf, MAX_TEXT_LEN, "NEXT LEVEL %d", game->level + 1);
+        snprintf(buf, MAX_TEXT_LEN, "NEXT LEVEL %d", game->level);
         draw_text(buf, 10, 31, screen);
         break;
     case GAME_OVER:
@@ -312,7 +312,7 @@ void* start_mlfq_scheduling(void* arg) {
                         start_bullet(alien_num, game);
                         priority_queue->first0++;
                         q1[priority_queue->last1].alien_num = alien_num;
-                        q1[priority_queue->last1].remaining_time = 4;
+                        q1[priority_queue->last1].remaining_time = 3;
                         priority_queue->last1++;
                     }
                     
@@ -339,7 +339,7 @@ void* start_mlfq_scheduling(void* arg) {
                     q1[index1].remaining_time -= priority_queue->slice_time1;
                     if (q1[index1].remaining_time <= 0) {
                         start_bullet(alien_num, game);
-                        q1[index1].remaining_time = 6;
+                        q1[index1].remaining_time = 4;
                     }
                     usleep(priority_queue->slice_time1 * 500000);
                 }
@@ -364,7 +364,7 @@ void start_bullet(int alien_id, struct game* game) {
     bullet->alive = true;
     bullet->x = game->aliens[alien_id].x + 1;
     bullet->y = game->aliens[alien_id].y;
-    bullet->speed = 40.0;
+    bullet->speed = 25.0;
     strncpy(bullet->ascii, "|", MAX_SPRITE_WIDTH);
     bullet->width = strlen(bullet->ascii);
     bullet->height = 1;
