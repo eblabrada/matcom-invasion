@@ -24,10 +24,10 @@ void* my_malloc(size_t size) {
     Block* prev = NULL;
     Block* current = free_list;
 
-    printf("Requested size: %zu\n", size);
+    // printf("Requested size: %zu\n", size);
 
     while (current) {
-        printf("Current block size: %zu\n", current->size);
+        // printf("Current block size: %zu\n", current->size);
 
         if (current->size >= size) {
             if (current->size > size + sizeof(Block)) {
